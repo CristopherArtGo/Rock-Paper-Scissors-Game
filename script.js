@@ -3,84 +3,128 @@ let playerScore = 0;
 let computerNum = 0;
 let playerSelection;
 let computerSelection; 
-do {
-    //Asiking for player's input
-    playerSelection = prompt("Please type your selection, rock-paper-scissors.");
+let playerChoice = document.getElementById('playerChoice');
+let computerChoice = document.getElementById('computerChoice');
+let roundResult = document.getElementById('roundResult');
+let computerScoreDisplay = document.getElementById('computerScore');
+let playerScoreDisplay = document.getElementById('playerScore');
+let winner = document.getElementById('winner');
+let retry;
 
-    //Capitalizing the first letter only for uniformity of string values
-    playerSelection = playerSelection.toLowerCase();
-    let firstLetter = playerSelection[0].toUpperCase();
-    playerSelection = firstLetter + playerSelection.slice(1);
+function pickRock() {
+    playerSelection = "Rock";
+    playerChoice.textContent = `You have selected ${playerSelection}.`
+    return console.log(playRound(playerSelection, computerSelection));
+}
 
-    //Checking the validity of the player's choice
-    if (playerSelection == "Rock" || playerSelection == "Paper" || playerSelection == "Scissors")
+function pickPaper() {
+    playerSelection = "Paper";
+    playerChoice.textContent = `You have selected ${playerSelection}.`
+    return console.log(playRound(playerSelection, computerSelection));
+}
+
+function pickScissors() {
+    playerSelection = "Scissors";
+    playerChoice.textContent = `You have selected ${playerSelection}.`
+    return console.log(playRound(playerSelection, computerSelection));
+}
+
+function getComputerChoice() {
+    computerNum = Math.floor(Math.random() * 3) + 1;
+    console.log(computerNum);
+    switch(computerNum) {
+        case 1:
+            computerSelection = "Rock";
+            break;
+        case 2:
+            computerSelection = "Paper";
+            break;
+        case 3:
+            computerSelection = "Scissors";
+            break;
+    }
+    return computerSelection;
+}
+
+const rock = document.getElementById("rockButton");
+rock.addEventListener('click', pickRock);
+
+const paper = document.getElementById("paperButton");
+paper.addEventListener('click', pickPaper);
+
+const scissors = document.getElementById("scissorsButton");
+scissors.addEventListener('click', pickScissors);
+
+function playRound (player, computer) {
+    if (computerScore > 4 || playerScore > 4)
     {
-        console.log(`You have selected ${playerSelection}`);
-        console.log(`Rock! Paper! Scissors! Shoot!`);
+        return;
+    }
+    getComputerChoice();
+    computerChoice.textContent = `Computer has selected ${computerSelection}.`
+    let playerNum;
+    switch(player) {
+        case "Paper":
+            playerNum = 2;
+            break;
+        case "Scissors":
+            playerNum = 4;
+            break;
+        case "Rock":
+            playerNum = 6;
+    }
 
-        //Assigning random number for the Computer to choose
-        computerNum = Math.floor(Math.random() * 3) + 1;
-        console.log(computerNum);
-        
-        //Assigning a choice based on the random number from 1-3
-        function getComputerChoice() {
-            switch(computerNum) {
-                case 1:
-                    computerSelection = "Rock";
-                    break;
-                case 2:
-                    computerSelection = "Paper";
-                    break;
-                case 3:
-                    computerSelection = "Scissors";
-                    break;
-            }
-            return computerSelection;
-        }
-        getComputerChoice();
-        
-        console.log("Computer has selected " + computerSelection);
-        console.log(playRound(playerSelection,computerSelection));
-
-        function playRound (player, computer) {
-            let playerNum;
-            switch(playerSelection) {
-                case "Paper":
-                    playerNum = 2;
-                    break;
-                case "Scissors":
-                    playerNum = 4;
-                    break;
-                case "Rock":
-                    playerNum = 6;
-            }
-        
-            if (player === computer)
-            {
-                return `It's a tie, both selected ${computerSelection}`;
-            }
-            else if (playerNum/computerNum == 2)
-            {
-                playerScore++;
-                return `You win, ${playerSelection} beats ${computerSelection}!`;
-            }
-            else {
-                computerScore++;
-                return `You lose, ${computerSelection} beats ${playerSelection}!`;
-            }
-        }
+    if (playerSelection === computerSelection)
+    {
+        roundResult.textContent = `It's a tie, both selected ${computerSelection}`;
+    }
+    else if (playerNum/computerNum == 2)
+    {
+        playerScore++;
+        roundResult.textContent = `You win, ${playerSelection} beats ${computerSelection}!`;
+        playerScoreDisplay.textContent = `Player = ${playerScore}`;
+        checkScore();
     }
     else {
-        console.log("Invalid selection, please select rock, paper or scissors.")
+        computerScore++;
+        roundResult.textContent = `You lose, ${computerSelection} beats ${playerSelection}!`;
+        computerScoreDisplay.textContent = `Computer = ${computerScore}`;
+        checkScore();
     }
-    console.log(`Player = ${playerScore} Computer = ${computerScore}`);
 }
-while (computerScore <= 4 && playerScore <= 4);
-if (computerScore > playerScore)
+
+function checkScore ()
 {
-    console.log("You lose, Computer wins!");
+    if (computerScore > playerScore && (computerScore > 4 || playerScore > 4))
+    {
+        winner.textContent = "You lose, Computer wins!";
+        retry = document.createElement('button');
+        retry.textContent = "Retry";
+        winner.appendChild(retry);
+        retry.addEventListener('click', reset);
+        return;
+    }
+    else if (playerScore > computerScore && (computerScore > 4 || playerScore > 4))
+    {
+        winner.textContent = "You win!";
+        retry = document.createElement('button');
+        retry.textContent = "Retry";
+        winner.appendChild(retry);
+        retry.addEventListener('click', reset);
+        return;
+    }
 }
-else {
-    console.log("You win!");
+
+function reset() {
+    playerScore = 0;
+    computerScore = 0;
+    computerScoreDisplay.textContent = `Computer = ${computerScore}`;
+    playerScoreDisplay.textContent = `Player = ${playerScore}`;
+    winner.removeChild(retry);
+    winner.textContent = "";
+    computerChoice.textContent = "";
+    playerChoice.textContent = "";
+    roundResult.textContent = "";
+    return;
 }
 
